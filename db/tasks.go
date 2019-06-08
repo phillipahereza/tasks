@@ -40,18 +40,6 @@ func FetchTasks() ([]Task, error){
 	return tasks, err
 }
 
-// // DeleteTask removes a task 
-// func DeleteTask(id int) error {
-// 	var task Task
-// 	err := db.One("ID", id, &task)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = db.DeleteStruct(&task)
-// 	return err
-// }
-
 // DoTask marks a task as complete
 func DoTask(id int) error {
 	err := db.Delete("Task", id)
@@ -61,3 +49,4 @@ func DoTask(id int) error {
 
 	return db.ReIndex(&Task{})
 }
+
