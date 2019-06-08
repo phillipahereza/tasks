@@ -3,18 +3,30 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"strconv"
 )
 
 var doCmd = &cobra.Command{
-	Use: "do",
+	Use:   "do",
 	Short: "Mark a task on your TODO list as complete",
-	Long: "Mark a task on your TODO list as complete",
+	Long:  "Mark a task on your TODO list as complete",
 	Run: func(cmd *cobra.Command, args []string) {
-		task := "review talk proposal"
-		fmt.Printf("You have completed the \"%s\" task", task)
+		var ids []int
+		for _, arg := range args {
+			id, err := strconv.Atoi(arg)
+			if err != nil {
+				fmt.Printf("failed to parse argument \"%s\"\n", arg)
+			} else {
+				ids = append(ids, id)
+			}
+		}
+		for _, task := range ids {
+			fmt.Printf("You have completed the \"%d\" task\n", task)
+		}
+
 	},
 }
 
-func init(){
+func init() {
 	rootCmd.AddCommand(doCmd)
 }
