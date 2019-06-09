@@ -1,10 +1,11 @@
 package db
 
 import (
+	"github.com/asdine/storm/q"
 	"github.com/asdine/storm"
 	// bolt "go.etcd.io/bbolt"
 	"log"
-	// "time"
+	"time"
 )
 
 var db *storm.DB
@@ -13,6 +14,9 @@ var db *storm.DB
 type Task struct {
 	ID        int `storm:"id,increment"`
 	Value     string
+	Completed bool
+	Deleted   bool
+	CreatedAt time.Time
 }
 
 // Init initializes database
@@ -24,7 +28,7 @@ func Init(dbPath string) error {
 
 // CreateTask adds task to the DB
 func CreateTask(value string) (Task, error) {
-	task := Task{Value: value}
+	task := Task{Value: value, Completed: false, Deleted: false, CreatedAt: time.Now()}
 	err := db.Save(&task)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
@@ -33,21 +37,20 @@ func CreateTask(value string) (Task, error) {
 }
 
 // FetchTasks retrieves all tasks
-func FetchTasks() ([]Task, error){
+func FetchTasks() ([]Task, error) {
 	var tasks []Task
-	err := db.All(&tasks)
-	
+	err := db.Select(q.And(q.Eq("Completed", false), q.Eq("Deleted", false))).Find(&tasks)
 	return tasks, err
 }
 
 // DoTask marks a task as complete
 func DoTask(id int) error {
-	err := db.Delete("Task", id)
-	if err != nil {
-		return err
-	}
+	return db.UpdateField(&Task{ID: id}, "Completed", true)
+}
 
-	return db.ReIndex(&Task{})
+// DeleteTask marks a task as deleted
+func DeleteTask(id int) error {
+	return db.UpdateField(&Task{ID: id}, "Deleted", true)
 }
 
 // TODO add deleted, timeCreated, timeCompleted to Task
@@ -55,4 +58,3 @@ func DoTask(id int) error {
 // TODO add complete command to show Tasks completed within 12hrs 24hrs, i.e use flags
 // TODO add ability to track time of task, start stop track
 // TODO show status of tasks
-

@@ -1,19 +1,19 @@
 package cmd
 
 import (
-	"github.com/phillipahereza/tasks/db"
 	"fmt"
+	"github.com/phillipahereza/tasks/db"
 	"github.com/spf13/cobra"
 )
 
-var status string;
+var status string
 
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all of your incomplete tasks",
 	Long:  "List all of your incomplete tasks",
 	Run: func(cmd *cobra.Command, args []string) {
-		
+
 		tasks, err := db.FetchTasks()
 		if err != nil {
 			fmt.Println("Unable to fetch task list")

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/phillipahereza/tasks/db"
 	"fmt"
+	"github.com/phillipahereza/tasks/db"
 	"github.com/spf13/cobra"
 	"strconv"
 )
