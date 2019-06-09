@@ -6,8 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var status string
-
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all of your incomplete tasks",
@@ -18,8 +16,8 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println("Unable to fetch task list")
 		}
-		for _, t := range tasks {
-			fmt.Printf("%d: %s\n", t.ID, t.Value)
+		for i, t := range tasks {
+			fmt.Printf("%d: %s\n",i+1, t.Value)
 		}
 		
 	},
