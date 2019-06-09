@@ -17,9 +17,9 @@ var listCmd = &cobra.Command{
 			fmt.Println("Unable to fetch task list")
 		}
 		for i, t := range tasks {
-			fmt.Printf("%d: %s\n",i+1, t.Value)
+			fmt.Printf("%d: %s\n", i+1, t.Value)
 		}
-		
+
 	},
 }
 

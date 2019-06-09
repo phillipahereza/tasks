@@ -5,7 +5,6 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/phillipahereza/tasks/db"
 	"github.com/spf13/cobra"
-	"strconv"
 	"strings"
 )
 
@@ -16,38 +15,48 @@ var doCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		tasks, err := db.FetchTasks()
 
-		var tasksText []string
-
-		for _, task := range tasks {
-			tasksText = append(tasksText, fmt.Sprintf("%d: %s", task.ID, task.Value))
+		if len(tasks) < 1 {
+			fmt.Println("You have no incomplete tasks")
+			return
 		}
+
+		templates := &promptui.SelectTemplates{
+			Label:    "{{ . }}?",
+			Active:   "\U00002714 {{ .Value | cyan }}",
+			Inactive: "  {{ .Value | cyan }}",
+			Selected: "\U00002714 {{ .Value | red | cyan }}",
+			Details: `
+--------- Tasks ----------
+{{ "Task:" | faint }}	{{ .Value }}
+{{ "Started:" | faint }}	{{ .CreatedAt }}`,
+		}
+
+		searcher := func(input string, index int) bool {
+			task := tasks[index]
+			name := strings.Replace(strings.ToLower(task.Value), " ", "", -1)
+			input = strings.Replace(strings.ToLower(input), " ", "", -1)
+
+			return strings.Contains(name, input)
+		}
+
 
 		prompt := promptui.Select{
 			Label: "Select a task to complete",
-			Items: tasksText,
+			Items: tasks,
+			Templates: templates,
+			Searcher:  searcher,
+			Size:      9,
 		}
 
-		_, result, err := prompt.Run()
+		i, _, err := prompt.Run()
 
 		if err != nil {
 			fmt.Printf("Prompt failed %v\n", err)
 			return
 		}
 
-		id := strings.Split(result, ":")[0]
 
-		// convert ID to int
-
-		idInt, err := strconv.Atoi(id)
-
-		if err != nil {
-			fmt.Printf("Failed to complete selected task %v\n", err)
-			return
-		}
-
-		err = db.DeleteTask(idInt)
-
-		fmt.Printf("You completed %q\n", result)
+		err = db.DoTask(tasks[i].ID)
 
 	},
 }
