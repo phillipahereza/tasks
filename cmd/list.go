@@ -21,6 +21,7 @@ var listCmd = &cobra.Command{
 		for _, t := range tasks {
 			fmt.Printf("%d: %s\n", t.ID, t.Value)
 		}
+		
 	},
 }
 

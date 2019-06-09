@@ -63,6 +63,6 @@ func FetchCompletedTasks(timeDelta time.Duration) ([]Task, error) {
 	return tasks, err
 }
 
-// TODO add complete command to show Tasks completed within 12hrs 24hrs, i.e use flags
 // TODO add ability to track time of task, start stop track
 // TODO show status of tasks
+// TODO format data into tables
